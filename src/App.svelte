@@ -33,11 +33,26 @@
 
   async function fetchData() {
     setLocate();
-
     console.log('fetchData');
-    const res = await fetch('https://tcgbusfs.blob.core.windows.net/blobyoubike/YouBikeTP.json').then(d => d.json())
-    console.log('fetchData done', res);
-    points = Object.values(res.retVal);
+
+    // Taipei
+    const api_taipei = 'https://tcgbusfs.blob.core.windows.net/blobyoubike/YouBikeTP.json'
+    const res_taipei = await fetch(api_taipei).then(d => d.json())
+    console.log('fetch TaipeiData done', res_taipei);
+    const list_taipei = Object.values(res_taipei.retVal);
+
+
+    // Taoyuan
+    const cors = "https://cors-anywhere.herokuapp.com/"
+    let taoyuan_api = "https://data.tycg.gov.tw/api/v1/rest/datastore/a1b4714b-3b75-4ff8-a8f2-cc377e4eaa0f?format=json&limit=500"
+    taoyuan_api = cors + taoyuan_api
+    const res_taoyuan = await fetch(taoyuan_api).then(d => d.json())
+    console.log('fetch TaoyuanData done', res_taoyuan);
+    const list_taoyuan = res_taoyuan.result.records;
+
+
+    // combine taipei, taoyuan data into points array
+    points = [...list_taoyuan, ...list_taipei];
   };
 
   function getRecentPoints(points, range, location) {
@@ -149,11 +164,14 @@
   <header>
     <h1>YouBike Map</h1>
   </header>
-  <Comment />
+  <!-- <Comment /> -->
 
   <ul class="info">
     <li>
-      GitHub: <a href="https://github.com/rplus/youbike-map">Rplus / Youbike-Map</a>
+        Fork From: <a href="https://github.com/rplus/youbike-map">Rplus / Youbike-Map</a>
+    </li>
+    <li>
+      GitHub: <a href="https://github.com/ayugioh2003/youbike-map">ayugioh2003 / Youbike-Map</a>
     </li>
     <li>
       Relesed with: <a href="https://github.com/Rplus/youbike-map/blob/master/LICENSE">MIT license</a>
@@ -162,8 +180,14 @@
       資料來源:
       <br>
       <a href="https://taipeicity.github.io/traffic_realtime/">臺北市政府 交通即時資料 開放資料專區</a>
+      <br>
+      <a href="https://data.tycg.gov.tw/opendata/datalist/datasetMeta?oid=5ca2bfc7-9ace-4719-88ae-4034b9a5a55c">桃園市政府 桃園公共自行車即時服務資料</a>
     </li>
   </ul>
+  <div style="text-align: center; padding-bottom: 2rem;">
+    (只能查找臺北、桃園地區)<br>
+    (桃園資料來源可能會有點不穩定，斟酌參考)
+  </div>
 </footer>
 
 
